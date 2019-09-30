@@ -1,0 +1,55 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos on AWS",
+    "description": "Testing Chaos capabilities on AWS",
+    "configuration": {
+
+                "aws_region": "eu-central-1",
+                "aws_access": {
+                    "type": "env",
+                    "key": "AWS_ACCESS"
+                },
+                "aws_secret": {
+                    "type": "env",
+                    "key": "AWS_SECRET"
+                }
+     },
+    "secrets": {
+                "aws" : {
+                    "aws_access_key_id": "${aws_access}",
+                    "aws_secret_key_id": "${aws_secret}"
+                }
+     },
+    "method": [
+      
+       {
+
+            "name": "stop-instance",
+            "type": "action",
+            "provider": {
+                "func": "stop_instance",
+                "type": "python",
+                "module": "chaosaws.ec2.actions",
+                "secrets": "aws",
+                "arguments": {
+                    "instance_id": "i-058e1640f4692dec6"
+                }
+             }
+       },
+
+      {
+            "name": "instance-state",
+            "type": "probe",
+            "provider": {
+                "func": "instance_state",
+                "arguments": {
+                    "state": "stopped",
+                    "instance_ids": ["i-058e1640f4692dec6"]
+                },
+                "type": "python",
+                "module": "chaosaws.ec2.probes"
+            }
+      }
+
+    ]
+}
